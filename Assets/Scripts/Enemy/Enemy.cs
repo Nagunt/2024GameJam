@@ -57,9 +57,12 @@ namespace GameJam
 
         public void SetDestination(Vector2 destination) => this.destination = destination;
 
+        public Graphic graphic;
+
         private void Awake()
         {
             rb2D = GetComponent<Rigidbody2D>();
+            graphic = GetComponentInChildren<Graphic>();
             groundMask = LayerMask.GetMask("Ground");
             firstPosition = transform.position;
 
@@ -76,6 +79,7 @@ namespace GameJam
         {
             isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundDistance, groundMask);
             fsm.Driver.FixedUpdate?.Invoke();
+            graphic.SetMoveDirection(moveDirection);
         }
     }
 }

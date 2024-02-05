@@ -68,7 +68,19 @@ namespace GameJam
                         moveDirection = 1;
                 }
 
-                rb2D.velocity = new Vector2(moveDirection * moveSpeed, rb2D.velocity.y);
+                rb2D.velocity += new Vector2(moveDirection * moveSpeed * 0.1f, 0);
+                // 기본적으로 0인 상태에서 1초동안 가속한다
+                if (moveDirection > 0 &&
+                    rb2D.velocity.x > moveSpeed) {
+                    // 움직이는 방향이 오른쪽일 경우, 최대 속도는 +moveSpeed
+                    rb2D.velocity = new Vector2(moveSpeed, rb2D.velocity.y);
+                }
+                
+                if(moveDirection < 0 &&
+                    rb2D.velocity.x < -moveSpeed) {
+                    // 움직이는 방향이 왼쪽일 경우, 최대 속도는 -moveSpeed
+                    rb2D.velocity = new Vector2(-moveSpeed, rb2D.velocity.y);
+                }
                 //if (isJump && jumpRoutine == null) {
                 //    jumpRoutine = StartCoroutine(JumpRoutine());
                 //}

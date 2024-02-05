@@ -8,7 +8,7 @@ namespace GameJam
     {
         private void OnTriggerEnter2D(Collider2D collision)
         {
-            if (TryGetComponent<Enemy>(out var enemy)) {
+            if (collision.TryGetComponent<Enemy>(out var enemy)) {
                 enemy.Jump();
             }
         }
