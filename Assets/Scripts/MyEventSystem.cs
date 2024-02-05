@@ -9,7 +9,9 @@ namespace GameJam
     {
         None = 0,
         Arrive,
-        
+        StageStart,
+        StageClear,
+        NextStage,
         PlatformDrop
     }
 
