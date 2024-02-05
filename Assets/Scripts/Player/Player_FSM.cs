@@ -175,7 +175,7 @@ namespace GameJam
                 Debug.Log("Dash Start");
 
                 float deltaTime = 0f;
-                float deltaDistance = 
+                //float deltaDistance = 
                 while (true) {
                     yield return new WaitForFixedUpdate();
                     deltaTime += Time.fixedDeltaTime;
