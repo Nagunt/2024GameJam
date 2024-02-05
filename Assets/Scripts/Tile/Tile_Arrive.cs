@@ -2,17 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Tile_Arrive : MonoBehaviour
+namespace GameJam
 {
-    // Start is called before the first frame update
-    void Start()
+    public class Tile_Arrive : MonoBehaviour
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+            Debug.Log(collision.name);
+            if (collision.TryGetComponent<Enemy>(out Enemy enemy)) {
+                MyEventSystem.Instance.Call<Enemy, Vector2>(EventType.Arrive, enemy, transform.position);
+            }
+        }
     }
 }

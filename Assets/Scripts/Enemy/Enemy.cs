@@ -25,6 +25,7 @@ namespace GameJam
             public StateEvent Attack;
             public StateEvent Hit;
             public StateEvent Dead;
+            public StateEvent Update;
             public StateEvent FixedUpdate;
         }
 
@@ -40,19 +41,21 @@ namespace GameJam
 
         private Rigidbody2D rb2D;
 
-        public Collider2D searchArea;
-        public ContactFilter2D searchFilter;
-        private List<Collider2D> searchResults = new List<Collider2D>();
-
         public Transform target;
 
         private Vector2 firstPosition;
+
+        private Vector2 destination;
         public void Idle() => fsm.Driver.Idle?.Invoke();
         public void Move(Vector2 direction) => fsm.Driver.Move?.Invoke(direction);
         public void Jump() => fsm.Driver.Jump?.Invoke();
         public void Attack() => fsm.Driver.Attack?.Invoke();
         public void Hit() => fsm.Driver.Hit?.Invoke();
         public void Dead() => fsm.Driver.Dead?.Invoke();
+
+        public void SetTarget(Transform target) => this.target = target;
+
+        public void SetDestination(Vector2 destination) => this.destination = destination;
 
         private void Awake()
         {
@@ -64,24 +67,14 @@ namespace GameJam
             fsm.ChangeState(States.Idle);
         }
 
+        private void Update()
+        {
+            fsm.Driver.Update?.Invoke();
+        }
+
         private void FixedUpdate()
         {
             isGrounded = Physics2D.Raycast(transform.position, Vector2.down, groundDistance, groundMask);
-            if (searchArea) {
-                searchResults.Clear();
-                //searchArea가 없으면 플레이어를 찾지 않는다
-                if (Physics2D.OverlapCollider(searchArea, searchFilter, searchResults) > 0) {
-                    foreach (Collider2D col2D in searchResults) {
-                        if (col2D.CompareTag("Player")) {
-                            target = col2D.transform;
-                        }
-                    }
-                }
-                else {
-                    // searchArea 밖에 플레이어가 나가면 타겟을 초기화한다
-                    target = null;
-                }
-            }
             fsm.Driver.FixedUpdate?.Invoke();
         }
     }

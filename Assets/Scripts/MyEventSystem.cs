@@ -75,6 +75,7 @@ namespace GameJam
                 (value as EventDelegateClass<T, K>).callback += action;
             }
             else {
+                Debug.Log("Register Event At");
                 EventDelegateClass<T, K> newEvent = new EventDelegateClass<T, K>();
                 newEvent.callback += action;
                 dic.Add(eventType, newEvent);
@@ -124,8 +125,10 @@ namespace GameJam
 
         public void Call<T, K>(EventType eventType, T t, K k)
         {
+            Debug.Log("Call Event At");
             Dictionary<EventType, EventDelegateClass> dic = eventData_2;
             if (dic.TryGetValue(eventType, out EventDelegateClass value)) {
+                Debug.Log("¡∏¿Á«‘");
                 (value as EventDelegateClass<T, K>).callback?.Invoke(t, k);
             }
         }

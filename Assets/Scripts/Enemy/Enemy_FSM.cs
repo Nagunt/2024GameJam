@@ -24,6 +24,13 @@ namespace GameJam
             fsm.ChangeState(States.Hit, StateTransition.Overwrite);
         }
 
+        void Idle_Update()
+        {
+            if(target != null || destination != Vector2.negativeInfinity) {
+                Move(Vector2.zero);
+            }
+        }
+
         void Move_Enter()
         {
             
@@ -47,19 +54,33 @@ namespace GameJam
         void Move_FixedUpdate()
         {
             if (rb2D) {
-                rb2D.velocity = new Vector2(moveDirection * moveSpeed, rb2D.velocity.y);
-                if (isJump && jumpRoutine == null) {
-                    jumpRoutine = StartCoroutine(JumpRoutine());
+                // 우선순위 : 타겟 -> 목적지
+                if (target != null) {
+                    // 타겟이 존재
+                    destination = target.position;
                 }
+
+                if (destination != Vector2.negativeInfinity) {
+                    // 목적지가 존재
+                    if (rb2D.position.x > destination.x)
+                        moveDirection = -1;
+                    else 
+                        moveDirection = 1;
+                }
+
+                rb2D.velocity = new Vector2(moveDirection * moveSpeed, rb2D.velocity.y);
+                //if (isJump && jumpRoutine == null) {
+                //    jumpRoutine = StartCoroutine(JumpRoutine());
+                //}
             }
 
-            IEnumerator JumpRoutine()
-            {
-                rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-                yield return new WaitUntil(() => isGrounded == false);
-                isJump = false;
-                jumpRoutine = null;
-            }
+            //IEnumerator JumpRoutine()
+            //{
+            //    rb2D.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            //    yield return new WaitUntil(() => isGrounded == false);
+            //    isJump = false;
+            //    jumpRoutine = null;
+            //}
         }
 
         void Attack_Enter()
