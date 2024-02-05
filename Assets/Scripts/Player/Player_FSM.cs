@@ -9,6 +9,18 @@ namespace GameJam
 {
     public partial class Player
     {
+        bool CanDrop()
+        {
+            if(isGrounded) {
+                foreach(Collider2D col2D in groundData) {
+                    if (col2D.CompareTag("Platform")) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         void Idle_Enter()
         {
             Debug.Log("Player State : " + fsm.State);
@@ -22,10 +34,6 @@ namespace GameJam
         {
             fsm.ChangeState(States.Dash);
             fsm.Driver.Dash?.Invoke(direction);
-        }
-        void Idle_Drop()
-        {
-
         }
         void Idle_Jump(float force)
         {
@@ -43,9 +51,9 @@ namespace GameJam
                 Dash(1);
             }
             else if (isSpace) {
-                if (inputData.y < 0) {
+                if (inputData.y < 0 && CanDrop()) {
                     Debug.Log("Space Pressed With Down Key");
-                    Drop();
+                    Jump(-1f);
                 }
                 else if (CanJump) {
                     Debug.Log("Space Pressed");
@@ -55,6 +63,7 @@ namespace GameJam
         }
         void Idle_FixedUpdate()
         {
+            return;
             if(rb2D.velocity.x > 0) {
                 rb2D.velocity -= new Vector2(moveSpeed * moveDeltaTime, 0);
                 if (rb2D.velocity.x < 0) rb2D.velocity = new Vector2(0, rb2D.velocity.y);
@@ -112,9 +121,9 @@ namespace GameJam
                 Dash(inputData.x);
             }
             else if (isSpace) {
-                if (inputData.y < 0) {
+                if (inputData.y < 0 && CanDrop()) {
                     Debug.Log("Space Pressed With Down Key");
-                    Drop();
+                    Jump(-1f);
                 }
                 else if (CanJump) {
                     Debug.Log("Space Pressed");
@@ -161,6 +170,7 @@ namespace GameJam
         {
             isDash = false;
             isEffect = false;
+            rb2D.isKinematic = false;
             if (dashRoutine != null)
                 StopCoroutine(dashRoutine);
         }
@@ -173,15 +183,18 @@ namespace GameJam
             IEnumerator DashRoutine()
             {
                 Debug.Log("Dash Start");
-
                 float deltaTime = 0f;
-                //float deltaDistance = 
+                float deltaDistance = dashDistance / (50 * dashMotionTime);
+                rb2D.isKinematic = true;
+                rb2D.velocity = Vector2.zero;
                 while (true) {
                     yield return new WaitForFixedUpdate();
                     deltaTime += Time.fixedDeltaTime;
+                    rb2D.MovePosition(new Vector2(rb2D.position.x + deltaDistance * direction, rb2D.position.y));
                     if (deltaTime > dashEffectTime && isEffect) isEffect = false;
                     if (deltaTime > dashMotionTime) break;
                 }
+                rb2D.isKinematic = false;
                 Debug.Log("Dash End");
                 isDash = false;
                 dashRoutine = null;
@@ -235,6 +248,14 @@ namespace GameJam
                 rb2D.velocity = new Vector2(rb2D.velocity.x, 0);
                 rb2D.AddForce(Vector2.up * force, ForceMode2D.Impulse);
             }
+            else if(force <= -1f) {
+                Vector2 newPos = new Vector2(transform.position.x, transform.position.y - 0.2f);
+                MyEventSystem.Instance.Call<Collider2D, Vector2>(
+                    EventType.PlatformDrop,
+                    col2D,
+                    newPos);
+                transform.position = newPos;
+            }
             jumpCounter++;
             jumpRoutine = StartCoroutine(JumpRoutine());
 
@@ -281,6 +302,23 @@ namespace GameJam
                     else Dash(-1);
                 }
             }
+        }
+
+        void Hit_Enter()
+        {
+            Debug.Log("Player State : " + fsm.State);
+        }
+        void Idle_Hit()
+        {
+            fsm.ChangeState(States.Hit, StateTransition.Overwrite);
+        }
+        void Move_Hit()
+        {
+            fsm.ChangeState(States.Hit, StateTransition.Overwrite);
+        }
+        void Jump_Hit()
+        {
+            fsm.ChangeState(States.Hit, StateTransition.Overwrite);
         }
 
         void Dead_Enter()

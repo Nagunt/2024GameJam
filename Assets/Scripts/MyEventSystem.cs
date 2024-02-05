@@ -8,7 +8,9 @@ namespace GameJam
     public enum EventType
     {
         None = 0,
-        Arrive
+        Arrive,
+        
+        PlatformDrop
     }
 
     public class MyEventSystem : MonoBehaviour
