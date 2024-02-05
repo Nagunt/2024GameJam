@@ -39,14 +39,14 @@ namespace GameJam
                 return;
             }
             if (rb2D == null || col2D == null) return;
-            if (Player.instance == null) return;
-            if (Player.instance.rb2D.position.y >= rb2D.position.y) {
-                if (Physics2D.GetIgnoreCollision(col2D, Player.instance.col2D)) {
-                    Physics2D.IgnoreCollision(col2D, Player.instance.col2D, false);
+            if (Player.Instance == null) return;
+            if (Player.Instance.rb2D.position.y >= rb2D.position.y) {
+                if (Physics2D.GetIgnoreCollision(col2D, Player.Instance.col2D)) {
+                    Physics2D.IgnoreCollision(col2D, Player.Instance.col2D, false);
                 }
             }
             else {
-                Physics2D.IgnoreCollision(col2D, Player.instance.col2D);
+                Physics2D.IgnoreCollision(col2D, Player.Instance.col2D);
             }
         }
     }
