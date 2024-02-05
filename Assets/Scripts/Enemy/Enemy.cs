@@ -37,7 +37,10 @@ namespace GameJam
         private int groundMask;
 
         public float moveSpeed = 5f;
+        public float moveAccel = 0.05f;     // 몇 초 만에 최대 속도에 도달하는가?
         public float jumpForce = 5f;
+
+        private float moveDeltaTime;
 
         private Rigidbody2D rb2D;
 
@@ -65,6 +68,7 @@ namespace GameJam
             graphic = GetComponentInChildren<Graphic>();
             groundMask = LayerMask.GetMask("Ground");
             firstPosition = transform.position;
+            moveDeltaTime = (1 / moveAccel) / 50;
 
             fsm = new StateMachine<States, Driver>(this);
             fsm.ChangeState(States.Idle);
