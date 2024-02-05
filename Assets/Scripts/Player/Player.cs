@@ -108,15 +108,15 @@ namespace GameJam
             if (_moveInput.x != 0)
                 CheckDirectionToFace(_moveInput.x > 0);
 
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.J)) {
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C)) {
                 OnJumpInput();
             }
 
-            if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.C) || Input.GetKeyUp(KeyCode.J)) {
+            if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.C)) {
                 OnJumpUpInput();
             }
 
-            if (Input.GetKeyDown(KeyCode.X) || Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.K)) {
+            if (Input.GetKeyDown(KeyCode.LeftShift)) {
                 OnDashInput();
             }
             #endregion
@@ -323,6 +323,14 @@ namespace GameJam
         {
             //Calculate the direction we want to move in and our desired velocity
             float targetSpeed = _moveInput.x * Data.runMaxSpeed;
+
+            if (LastOnGroundTime > 0 && targetSpeed == 0) {
+                // ¸¶ÂûÀÇ ±¸Çö
+                float amount = Mathf.Max(Mathf.Abs(rb2D.velocity.x), 0.2f);
+                amount *= Mathf.Sign(rb2D.velocity.x);
+                rb2D.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
+                //return;
+            }
             //We can reduce are control using Lerp() this smooths changes to are direction and speed
             targetSpeed = Mathf.Lerp(rb2D.velocity.x, targetSpeed, lerpAmount);
 
