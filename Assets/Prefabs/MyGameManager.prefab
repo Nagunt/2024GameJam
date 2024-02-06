@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3388930486472867523}
   - component: {fileID: 5763481776733297344}
+  - component: {fileID: 1465044494250647960}
   m_Layer: 0
   m_Name: MyGameManager
   m_TagString: Untagged
@@ -51,3 +52,20 @@ MonoBehaviour:
   - {fileID: 4840091691664825020, guid: e49be9e6a53f65d46b263c17ea21020e, type: 3}
   index: 0
   playerPrefab: {fileID: 5606204997621951455, guid: f2bd8809620ed0e4cb04519ca7fb95fc, type: 3}
+--- !u!114 &1465044494250647960
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6394049033346628575}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1a39b00f4a5744dfa3dade7a3684dc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timer: 0
+  tiktok: 0
+  weatherPrefab:
+  - {fileID: 1560895667790149307, guid: e45a7f71530964a358abfda3c05da578, type: 3}
+  - {fileID: 4381594499577832422, guid: ba6c5e10a9ab2471fa12d2fba0f21942, type: 3}
