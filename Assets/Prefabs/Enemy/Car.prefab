@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 9121506345360433187}
   - component: {fileID: 3594798531724939411}
   - component: {fileID: 4366878529200047210}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Graphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -128,12 +128,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4738419788768082040}
-  - component: {fileID: 851185948330504751}
+  - component: {fileID: 5566572987511187408}
   - component: {fileID: 7558374054765881460}
   - component: {fileID: 3326595752847844502}
   - component: {fileID: 149003313648836423}
   - component: {fileID: 1277738325839221641}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Car
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -156,8 +156,8 @@ Transform:
   - {fileID: 6148533360646175611}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &851185948330504751
-BoxCollider2D:
+--- !u!70 &5566572987511187408
+CapsuleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -188,19 +188,9 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.5}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 2, y: 1}
-  m_EdgeRadius: 0
+  m_Offset: {x: 0, y: 0.4}
+  m_Size: {x: 1.6, y: 0.8}
+  m_Direction: 1
 --- !u!50 &7558374054765881460
 Rigidbody2D:
   serializedVersion: 4
@@ -243,6 +233,7 @@ MonoBehaviour:
   isJump: 0
   isGrounded: 0
   moveSpeed: 5
+  moveAccel: 0.05
   jumpForce: 5
   target: {fileID: 0}
   graphic: {fileID: 0}
@@ -274,8 +265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2fc946465e6973b44bd77cf82b219a23, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damage: 0
-  hitBox: {fileID: 0}
+  damage: 1
+  hitBox: {fileID: 5566572987511187408}
   hitFilter:
     useTriggers: 0
     useLayerMask: 0

@@ -33,25 +33,11 @@ namespace GameJam
             Index = firstIndex;
         }
 
-        void OnArrive(Enemy enemy, Vector2 pos)
+        private void Update()
         {
-            Debug.Log("Arrived : " + enemy.name + " Position : " + pos);
-            if (enemy == owner &&
-                positions[Index] == pos) {
+            if (owner.IsArrived(positions[Index])) {
                 Index++;
             }
-        }
-
-        private void OnEnable()
-        {
-            Debug.Log("Event Register");
-            MyEventSystem.Instance.Register<Enemy, Vector2>(EventType.Arrive, OnArrive);
-        }
-
-        private void OnDisable()
-        {
-            Debug.Log("Event UnRegister");
-            MyEventSystem.Instance.UnRegister<Enemy, Vector2>(EventType.Arrive, OnArrive);
         }
     }
 }

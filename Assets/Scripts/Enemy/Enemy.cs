@@ -60,6 +60,11 @@ namespace GameJam
 
         public void SetDestination(Vector2 destination) => this.destination = destination;
 
+        public bool IsArrived(Vector2 destination)
+        {
+            return ((Vector2)transform.position - destination).sqrMagnitude < 0.01f;
+        }
+
         public Graphic graphic;
 
         private void Awake()

@@ -20,7 +20,7 @@ namespace GameJam
                 if (Physics2D.OverlapCollider(hitBox, hitFilter, hitResults) > 0) {
                     foreach (Collider2D col2D in hitResults) {
                         if (col2D.CompareTag("Player")) {
-                            Debug.Log("Damage : " + damage);
+                            col2D.GetComponent<Player>().Hit(damage, transform.position);
                         }
                     }
                 }

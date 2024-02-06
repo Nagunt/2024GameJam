@@ -55,8 +55,8 @@ namespace GameJam
         {
             StopCoroutine(nameof(Routine));
             Destroy(current.gameObject);
-            if (Player.Instance != null) {
-                Destroy(Player.Instance.gameObject);
+            if (Player.Instance.gameObject != null) {
+                DestroyImmediate(Player.Instance.gameObject);
             }
             StartCoroutine(nameof(Routine));
         }
