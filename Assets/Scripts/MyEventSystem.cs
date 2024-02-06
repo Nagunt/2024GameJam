@@ -12,6 +12,9 @@ namespace GameJam
         StageStart,
         StageClear,
         NextStage,
+        StageRestart,
+        HPChanged,
+        GameOver,
         PlatformDrop
     }
 

@@ -82,21 +82,39 @@ namespace GameJam
         [SerializeField] private LayerMask _groundLayer;
         #endregion
 
-        public int hp;
+
+        bool IsAlive => hp > 0;
+        private int hp;
         public int maxHP = 5;
+        public int HP {
+            get {
+                return hp;
+            }
+            set {
+                hp = value;
+                if (hp < 0) hp = 0;
+                if (hp > maxHP) hp = maxHP;
+                MyEventSystem.Instance.Call(EventType.HPChanged, hp, maxHP);
+            }
+        }
+
+        public Graphic_Player graphic;
 
         private void Awake()
         {
             Instance = this;
             rb2D = GetComponent<Rigidbody2D>();
             col2D = GetComponent<Collider2D>();
+            graphic = GetComponentInChildren<Graphic_Player>();
             hp = maxHP;
         }
 
         private void Start()
         {
             SetGravityScale(Data.gravityScale);
+            graphic.SetOwner(this);
             IsFacingRight = true;
+            HP = HP;
         }
 
         private void Update()
@@ -114,32 +132,34 @@ namespace GameJam
             #endregion
 
             #region INPUT HANDLER
-            _moveInput.x = Input.GetAxisRaw("Horizontal");
-            _moveInput.y = Input.GetAxisRaw("Vertical");
+            if (IsAlive) {
+                _moveInput.x = Input.GetAxisRaw("Horizontal");
+                _moveInput.y = Input.GetAxisRaw("Vertical");
 
-            if (_moveInput.x != 0)
-                CheckDirectionToFace(_moveInput.x > 0);
+                if (_moveInput.x != 0)
+                    CheckDirectionToFace(_moveInput.x > 0);
 
-            if(_moveInput.y < 0) {
-                Debug.Log("아래로");
-                MyEventSystem.Instance.Call(EventType.PlatformDrop);
-            }
-                
+                if (_moveInput.y < 0) {
+                    Debug.Log("아래로");
+                    MyEventSystem.Instance.Call(EventType.PlatformDrop);
+                }
 
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C)) {
-                OnJumpInput();
-            }
 
-            if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.C)) {
-                OnJumpUpInput();
-            }
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C)) {
+                    OnJumpInput();
+                }
 
-            if (Input.GetKeyDown(KeyCode.LeftShift)) {
-                OnDashInput();
-            }
+                if (Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.C)) {
+                    OnJumpUpInput();
+                }
 
-            if (Input.GetKeyDown(KeyCode.X)) {
-                OnShootInput();
+                if (Input.GetKeyDown(KeyCode.LeftShift)) {
+                    OnDashInput();
+                }
+
+                if (Input.GetKeyDown(KeyCode.X)) {
+                    OnShootInput();
+                }
             }
             #endregion
 
@@ -149,7 +169,7 @@ namespace GameJam
                 if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer)) //checks if set box overlaps with ground
                 {
                     if (LastOnGroundTime < -0.1f) {
-                        //AnimHandler.justLanded = true;
+                        graphic.justLanded = true;
                     }
 
                     LastOnGroundTime = Data.coyoteTime; //if so sets the lastGrounded to coyoteTime
@@ -196,7 +216,7 @@ namespace GameJam
                     _isJumpFalling = false;
                     Jump();
 
-                    //AnimHandler.startedJumping = true;
+                    graphic.startedJumping = true;
                 }
                 //WALL JUMP
                 else if (CanWallJump() && LastPressedJumpTime > 0) {
@@ -355,13 +375,13 @@ namespace GameJam
             //Calculate the direction we want to move in and our desired velocity
             float targetSpeed = _moveInput.x * Data.runMaxSpeed;
 
-            if (LastOnGroundTime > 0 && targetSpeed == 0) {
-                // 마찰의 구현
-                float amount = Mathf.Max(Mathf.Abs(rb2D.velocity.x), 0.2f);
-                amount *= Mathf.Sign(rb2D.velocity.x);
-                rb2D.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
-                //return;
-            }
+            //if (LastOnGroundTime > 0 && targetSpeed == 0) {
+            //    // 마찰의 구현
+            //    float amount = Mathf.Max(Mathf.Abs(rb2D.velocity.x), 0.2f);
+            //    amount *= Mathf.Sign(rb2D.velocity.x);
+            //    rb2D.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
+            //    //return;
+            //}
             //We can reduce are control using Lerp() this smooths changes to are direction and speed
             targetSpeed = Mathf.Lerp(rb2D.velocity.x, targetSpeed, lerpAmount);
 
@@ -541,15 +561,15 @@ namespace GameJam
         {
             if (_isHit) return;
             if (IsDashing) return;
-            hp -= damage;
-            Debug.Log($"({hp} / {maxHP})");
+            HP -= damage;
             if (hp > 0) {
                 Vector2 direction = (Vector2)transform.position - position;
                 rb2D.AddForce(direction.normalized * power, ForceMode2D.Impulse);
                 StartCoroutine(nameof(HitRoutine));
             }
             else {
-                Dead();
+                
+                MyEventSystem.Instance.Call(EventType.GameOver);
             }
         }
 
@@ -559,6 +579,7 @@ namespace GameJam
         {
             _isHit = true;
             // Hit 애니메이션 실행
+            graphic.SetHitEffect(true);
             float startTime = Time.time;
             while (Time.time - startTime <= _hitAnimationTime) {
                 yield return null;
@@ -568,13 +589,9 @@ namespace GameJam
             while (Time.time - startTime <= _hitImmuneTime) {
                 yield return null;
             }
+            graphic.SetHitEffect(false);
             // Hit 면역 판정 종료
             _isHit = false;
-        }
-
-        private void Dead()
-        {
-            Debug.Log("으앙주금");
         }
 
         #region CHECK METHODS

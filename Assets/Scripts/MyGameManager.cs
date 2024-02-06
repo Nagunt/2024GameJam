@@ -49,8 +49,16 @@ namespace GameJam
         {
             Debug.Log($"스테이지 {index} 클리어");
             _isClear = true;
-            
-            // 클리어 UI 띄우기?
+        }
+
+        private void OnStageRestart()
+        {
+            StopCoroutine(nameof(Routine));
+            Destroy(current.gameObject);
+            if (Player.Instance != null) {
+                Destroy(Player.Instance.gameObject);
+            }
+            StartCoroutine(nameof(Routine));
         }
 
         private void OnNextStage()
@@ -63,6 +71,7 @@ namespace GameJam
         {
             MyEventSystem.Instance.Register(EventType.StageStart, OnStageStart);
             MyEventSystem.Instance.Register(EventType.StageClear, OnStageClear);
+            MyEventSystem.Instance.Register(EventType.StageRestart, OnStageRestart);
             MyEventSystem.Instance.Register(EventType.NextStage, OnNextStage);
         }
 
@@ -70,6 +79,7 @@ namespace GameJam
         {
             MyEventSystem.Instance.UnRegister(EventType.StageStart, OnStageStart);
             MyEventSystem.Instance.UnRegister(EventType.StageClear, OnStageClear);
+            MyEventSystem.Instance.UnRegister(EventType.StageRestart, OnStageRestart);
             MyEventSystem.Instance.UnRegister(EventType.NextStage, OnNextStage);
         }
     }
