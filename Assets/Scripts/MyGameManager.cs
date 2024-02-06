@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace GameJam
 {
@@ -54,11 +55,7 @@ namespace GameJam
         private void OnStageRestart()
         {
             StopCoroutine(nameof(Routine));
-            Destroy(current.gameObject);
-            if (Player.Instance.gameObject != null) {
-                DestroyImmediate(Player.Instance.gameObject);
-            }
-            StartCoroutine(nameof(Routine));
+            SceneManager.LoadScene("World");
         }
 
         private void OnNextStage()
