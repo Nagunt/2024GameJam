@@ -11,6 +11,7 @@ namespace GameJam
         bool isContact = false;
         void OnPlatformDrop()
         {
+            Debug.Log("드롭 체크");
             if (isContact) {
                 platformEffector2D.rotationalOffset = 180;
                 isContact = false;

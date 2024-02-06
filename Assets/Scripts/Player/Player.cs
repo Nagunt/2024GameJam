@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 namespace GameJam
 {
@@ -14,6 +15,7 @@ namespace GameJam
         //Scriptable object which holds all the player's movement parameters. If you don't want to use it
         //just paste in all the parameters, though you will need to manuly change all references in this script
         public PlayerData Data;
+        public GameObject Bullet;
 
         #region COMPONENTS
         public Rigidbody2D rb2D { get; private set; }
@@ -50,6 +52,9 @@ namespace GameJam
         private Vector2 _lastDashDir;
         private bool _isDashAttacking;
 
+        //Shoot
+        private float _shootDelay;
+        private float _shootCooldown = 0.2f;
         #endregion
 
         #region INPUT PARAMETERS
@@ -69,6 +74,7 @@ namespace GameJam
         [SerializeField] private Transform _frontWallCheckPoint;
         [SerializeField] private Transform _backWallCheckPoint;
         [SerializeField] private Vector2 _wallCheckSize = new Vector2(0.5f, 1f);
+        [SerializeField] private Transform _shootPosition;
         #endregion
 
         #region LAYERS & TAGS
@@ -76,11 +82,15 @@ namespace GameJam
         [SerializeField] private LayerMask _groundLayer;
         #endregion
 
+        public int hp;
+        public int maxHP = 5;
+
         private void Awake()
         {
             Instance = this;
             rb2D = GetComponent<Rigidbody2D>();
             col2D = GetComponent<Collider2D>();
+            hp = maxHP;
         }
 
         private void Start()
@@ -99,6 +109,8 @@ namespace GameJam
 
             LastPressedJumpTime -= Time.deltaTime;
             LastPressedDashTime -= Time.deltaTime;
+
+            _shootDelay -= Time.deltaTime;
             #endregion
 
             #region INPUT HANDLER
@@ -107,6 +119,12 @@ namespace GameJam
 
             if (_moveInput.x != 0)
                 CheckDirectionToFace(_moveInput.x > 0);
+
+            if(_moveInput.y < 0) {
+                Debug.Log("아래로");
+                MyEventSystem.Instance.Call(EventType.PlatformDrop);
+            }
+                
 
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.C)) {
                 OnJumpInput();
@@ -118,6 +136,10 @@ namespace GameJam
 
             if (Input.GetKeyDown(KeyCode.LeftShift)) {
                 OnDashInput();
+            }
+
+            if (Input.GetKeyDown(KeyCode.X)) {
+                OnShootInput();
             }
             #endregion
 
@@ -292,6 +314,15 @@ namespace GameJam
         public void OnDashInput()
         {
             LastPressedDashTime = Data.dashInputBufferTime;
+        }
+
+        public void OnShootInput()
+        {
+            if (CanShoot()) {
+                _shootDelay = _shootCooldown;
+                //GameObject newBullet = Instantiate(Bullet, _shootPosition.position, Quaternion.identity);
+                //newBullet.activeSelf??
+            }
         }
         #endregion
 
@@ -505,6 +536,46 @@ namespace GameJam
         }
         #endregion
 
+        private bool _isHit;
+        public void Hit(int damage, Vector2 position, float power = 50f)
+        {
+            if (_isHit) return;
+            if (IsDashing) return;
+            hp -= damage;
+            Debug.Log($"({hp} / {maxHP})");
+            if (hp > 0) {
+                Vector2 direction = (Vector2)transform.position - position;
+                rb2D.AddForce(direction.normalized * power, ForceMode2D.Impulse);
+                StartCoroutine(nameof(HitRoutine));
+            }
+            else {
+                Dead();
+            }
+        }
+
+        private float _hitAnimationTime = 0.15f;
+        private float _hitImmuneTime = 0.35f;
+        private IEnumerator HitRoutine()
+        {
+            _isHit = true;
+            // Hit 애니메이션 실행
+            float startTime = Time.time;
+            while (Time.time - startTime <= _hitAnimationTime) {
+                yield return null;
+            }
+            startTime = Time.time;
+            // Hit 애니메이션 실행 종료
+            while (Time.time - startTime <= _hitImmuneTime) {
+                yield return null;
+            }
+            // Hit 면역 판정 종료
+            _isHit = false;
+        }
+
+        private void Dead()
+        {
+            Debug.Log("으앙주금");
+        }
 
         #region CHECK METHODS
         public void CheckDirectionToFace(bool isMovingRight)
@@ -549,6 +620,11 @@ namespace GameJam
                 return true;
             else
                 return false;
+        }
+
+        public bool CanShoot()
+        {
+            return _shootDelay <= 0f && !IsDashing;
         }
         #endregion
 
