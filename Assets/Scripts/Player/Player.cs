@@ -564,6 +564,10 @@ namespace GameJam
             HP -= damage;
             if (hp > 0) {
                 Vector2 direction = (Vector2)transform.position - position;
+                if (LastOnGroundTime > 0 && _moveInput.x == 0) {
+                    // 가만히 있을 때 맞으면..
+                    rb2D.MovePosition(new Vector2(transform.position.x, transform.position.y + 0.05f));
+                }
                 rb2D.AddForce(direction.normalized * power, ForceMode2D.Impulse);
                 StartCoroutine(nameof(HitRoutine));
             }

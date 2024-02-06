@@ -31,7 +31,7 @@ namespace GameJam
                 yield return new WaitUntil(() => _isClear);
                 yield return new WaitUntil(() => _isNextStage);
                 Destroy(current.gameObject);
-                Destroy(Player.Instance.gameObject);
+                DestroyImmediate(Player.Instance.gameObject);
                 yield return null;
                 index++;
             }
