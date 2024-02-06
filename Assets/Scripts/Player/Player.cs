@@ -140,7 +140,7 @@ namespace GameJam
                     CheckDirectionToFace(_moveInput.x > 0);
 
                 if (_moveInput.y < 0) {
-                    Debug.Log("¾Æ·¡·Î");
+                    Debug.Log("ï¿½Æ·ï¿½ï¿½ï¿½");
                     MyEventSystem.Instance.Call(EventType.PlatformDrop);
                 }
 
@@ -376,7 +376,7 @@ namespace GameJam
             float targetSpeed = _moveInput.x * Data.runMaxSpeed;
 
             //if (LastOnGroundTime > 0 && targetSpeed == 0) {
-            //    // ¸¶ÂûÀÇ ±¸Çö
+            //    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             //    float amount = Mathf.Max(Mathf.Abs(rb2D.velocity.x), 0.2f);
             //    amount *= Mathf.Sign(rb2D.velocity.x);
             //    rb2D.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
@@ -455,6 +455,9 @@ namespace GameJam
             if (rb2D.velocity.y < 0)
                 force -= rb2D.velocity.y;
 
+            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.playerAudioClips[0];
+            gameObject.GetComponent<AudioSource>().Play();
+
             rb2D.AddForce(Vector2.up * force, ForceMode2D.Impulse);
             #endregion
         }
@@ -479,6 +482,8 @@ namespace GameJam
 
             //Unlike in the run we want to use the Impulse mode.
             //The default mode will apply are force instantly ignoring masss
+            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.playerAudioClips[0];
+            gameObject.GetComponent<AudioSource>().Play();
             rb2D.AddForce(force, ForceMode2D.Impulse);
             #endregion
         }
@@ -496,6 +501,8 @@ namespace GameJam
 
             float startTime = Time.time;
 
+            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.playerAudioClips[1];
+            gameObject.GetComponent<AudioSource>().Play();
             _dashesLeft--;
             _isDashAttacking = true;
 
@@ -565,9 +572,11 @@ namespace GameJam
             if (hp > 0) {
                 Vector2 direction = (Vector2)transform.position - position;
                 if (LastOnGroundTime > 0 && _moveInput.x == 0) {
-                    // °¡¸¸È÷ ÀÖÀ» ¶§ ¸ÂÀ¸¸é..
+                    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½..
                     rb2D.MovePosition(new Vector2(transform.position.x, transform.position.y + 0.05f));
                 }
+                gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.playerAudioClips[2];
+                gameObject.GetComponent<AudioSource>().Play();
                 rb2D.AddForce(direction.normalized * power, ForceMode2D.Impulse);
                 StartCoroutine(nameof(HitRoutine));
             }
@@ -582,19 +591,19 @@ namespace GameJam
         private IEnumerator HitRoutine()
         {
             _isHit = true;
-            // Hit ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà
+            // Hit ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
             graphic.SetHitEffect(true);
             float startTime = Time.time;
             while (Time.time - startTime <= _hitAnimationTime) {
                 yield return null;
             }
             startTime = Time.time;
-            // Hit ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà Á¾·á
+            // Hit ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             while (Time.time - startTime <= _hitImmuneTime) {
                 yield return null;
             }
             graphic.SetHitEffect(false);
-            // Hit ¸é¿ª ÆÇÁ¤ Á¾·á
+            // Hit ï¿½é¿ª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             _isHit = false;
         }
 

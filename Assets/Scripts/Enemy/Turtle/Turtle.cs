@@ -36,6 +36,8 @@ namespace GameJam
         // Start is called before the first frame update
         void Start()
         {
+            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[0];
+            gameObject.GetComponent<AudioSource>().Play();
             StartCoroutine(nameof(Routine));
         }
 
@@ -57,6 +59,8 @@ namespace GameJam
                 graphic.SetCharge();
                 yield return new WaitForSeconds(3f);
                 if(Player.Instance.gameObject != null) {
+                    gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[3];
+                    gameObject.GetComponent<AudioSource>().Play();
                     newShot.Shot(Player.Instance.transform.position - newShot.transform.position);
                 }
                 newShot = null;
@@ -65,6 +69,8 @@ namespace GameJam
                 graphic.SetFilpX(false);
                 yield return new WaitForSeconds(4f);
                 _moveDir = new Vector2(-1, 0);
+                gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[1];
+                gameObject.GetComponent<AudioSource>().Play();
                 graphic.SetSpin(true);
                 yield return new WaitForSeconds(3f);
                 _moveDir = new Vector2(1, 0);
@@ -113,6 +119,8 @@ namespace GameJam
                             return;
                         }
                         else {
+                            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[4];
+                            gameObject.GetComponent<AudioSource>().Play();
                             graphic.SetDead();
                             if(newShot != null) Destroy(newShot.gameObject);
                             StopAllCoroutines();
@@ -125,6 +133,7 @@ namespace GameJam
             if (Physics2D.OverlapCollider(hitBox, contactFilter, colliders) > 0) {
                 foreach (Collider2D collider in colliders) {
                     if (collider.CompareTag("Player")) {
+
                         Player.Instance.Hit(damage, transform.position, power);
                     }
                 }
@@ -134,15 +143,15 @@ namespace GameJam
         private IEnumerator HitRoutine()
         {
             _isHit = true;
-            // Hit ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà
+            // Hit ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
             graphic.SetHitEffect(true);
             float startTime = Time.time;
-            // Hit ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà Á¾·á
+            // Hit ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             while (Time.time - startTime <= _hitImmuneTime) {
                 yield return null;
             }
             graphic.SetHitEffect(false);
-            // Hit ¸é¿ª ÆÇÁ¤ Á¾·á
+            // Hit ï¿½é¿ª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             _isHit = false;
         }
     }
