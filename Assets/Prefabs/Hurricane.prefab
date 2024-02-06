@@ -213,7 +213,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isGrounded: 0
   damage: 0
-  power: 50
+  power: 10
 --- !u!50 &8001850954816303120
 Rigidbody2D:
   serializedVersion: 4

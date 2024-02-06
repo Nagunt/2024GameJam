@@ -13,6 +13,11 @@ namespace GameJam
 
         public Player playerPrefab;
         private Stage current;
+
+        public AudioClip[] playerAudioClips;
+        public AudioClip[] bossAudioClips;
+        public AudioClip[] bGMAudioClips;
+
         private void Awake()
         {
             Instance = this;
@@ -41,13 +46,23 @@ namespace GameJam
         private bool _isNextStage = false;
         private void OnStageStart()
         {
-            Debug.Log($"½ºÅ×ÀÌÁö {index} ½ÃÀÛ");
+            gameObject.GetComponent<AudioSource>().Stop();
+            if (index!=3)
+            {
+                gameObject.GetComponent<AudioSource>().clip = bGMAudioClips[0];
+            }
+            else
+            {
+                gameObject.GetComponent<AudioSource>().clip = bGMAudioClips[1];
+            }
+            gameObject.GetComponent<AudioSource>().Play();
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {index} ï¿½ï¿½ï¿½ï¿½");
             _isClear = false;
             _isNextStage = false;
         }
         private void OnStageClear()
         {
-            Debug.Log($"½ºÅ×ÀÌÁö {index} Å¬¸®¾î");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ {index} Å¬ï¿½ï¿½ï¿½ï¿½");
             _isClear = true;
         }
 
@@ -63,7 +78,7 @@ namespace GameJam
 
         private void OnNextStage()
         {
-            Debug.Log($"´ÙÀ½ ½ºÅ×ÀÌÁö·Î~");
+            Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½~");
             _isNextStage = true;
         }
 
@@ -81,6 +96,14 @@ namespace GameJam
             MyEventSystem.Instance.UnRegister(EventType.StageClear, OnStageClear);
             MyEventSystem.Instance.UnRegister(EventType.StageRestart, OnStageRestart);
             MyEventSystem.Instance.UnRegister(EventType.NextStage, OnNextStage);
+        }
+
+        private void Update()
+        {
+            if(Input.GetKeyDown(KeyCode.P))
+            {
+                MyEventSystem.Instance.Call(EventType.StageClear);
+            }
         }
     }
 }
