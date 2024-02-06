@@ -65,18 +65,7 @@ namespace GameJam
                     RaycastHit2D raycastHit2D = Physics2D.Raycast(playerVector + new Vector2(Random.Range(-5, 5),1),new Vector2(0,-1));
                     if(raycastHit2D.collider!=null&& raycastHit2D.collider.gameObject.layer==6&& raycastHit2D.collider.gameObject.tag!="Player")
                     {
-                        /*
-                        GameObject point = Instantiate<GameObject>(weatherPrefab[0], raycastHit2D.point, Quaternion.identity);
-                        timer += Time.deltaTime;
-                        
-                        GameObject go = Instantiate<GameObject>(weatherPrefab[1], raycastHit2D.point, Quaternion.identity);
-                        go.GetComponent<Thunder>().thunderGraphic.SetTrigger();
-                        Destroy(point, 1f);
-                        Destroy(go, 1f);
-                        */
                         StartCoroutine(ThunderCoroutine());
-
-
                     }
  
                 }
@@ -94,7 +83,11 @@ namespace GameJam
             }
             else if (state == State.hot)
             {
-                
+                int damage = 1; float power = 0;
+                GameObject go = Instantiate<GameObject>(weatherPrefab[3]);
+                go.transform.localPosition = new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, 0);
+                GameJam.Player.Instance.Hit(damage, transform.position, power);
+                Destroy(go, 1);
             }
             else if (state == State.cold)
             {
