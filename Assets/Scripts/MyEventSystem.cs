@@ -15,7 +15,8 @@ namespace GameJam
         StageRestart,
         HPChanged,
         GameOver,
-        PlatformDrop
+        PlatformDrop,
+        GameClear
     }
 
     public class MyEventSystem : MonoBehaviour

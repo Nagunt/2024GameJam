@@ -62,7 +62,7 @@ namespace GameJam
 
         public bool IsArrived(Vector2 destination)
         {
-            return ((Vector2)transform.position - destination).sqrMagnitude < 0.01f;
+            return ((Vector2)transform.position - destination).sqrMagnitude < 0.15f;
         }
 
         public Graphic graphic;

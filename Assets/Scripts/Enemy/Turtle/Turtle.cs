@@ -116,7 +116,7 @@ namespace GameJam
                             graphic.SetDead();
                             if(newShot != null) Destroy(newShot.gameObject);
                             StopAllCoroutines();
-
+                            MyEventSystem.Instance.Call(EventType.GameClear);
                             return;
                         }
                     }
