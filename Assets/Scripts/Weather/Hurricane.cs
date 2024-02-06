@@ -15,7 +15,7 @@ namespace GameJam
         private float groundDistance = 0.05f;
 
         public int damage = 0;
-        public float power = 50f;
+        public float power = 10f;
 
         private void Awake()
         {

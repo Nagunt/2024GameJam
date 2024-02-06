@@ -43,11 +43,11 @@ namespace GameJam
             }
             else if (randomNum == 2)
             {
-                return State.cold;
+                return State.hot;
             }
             else if (randomNum == 3)
             {
-                return State.hot;
+                return State.cold;
             }
             else
             {
@@ -62,7 +62,7 @@ namespace GameJam
                 for(int i=0; i<3; i++)
                 {
                     Vector2 playerVector = GameJam.Player.Instance.gameObject.transform.position;
-                    RaycastHit2D raycastHit2D = Physics2D.Raycast(playerVector + new Vector2(Random.Range(-5, 5),3),new Vector2(0,-1));
+                    RaycastHit2D raycastHit2D = Physics2D.Raycast(playerVector + new Vector2(Random.Range(-5, 5),1),new Vector2(0,-1));
                     if(raycastHit2D.collider!=null&& raycastHit2D.collider.gameObject.layer==6&& raycastHit2D.collider.gameObject.tag!="Player")
                     {
                         /*
@@ -84,21 +84,21 @@ namespace GameJam
             else if(state == State.hurricane)
             {
                 Vector2 playerVector = GameJam.Player.Instance.gameObject.transform.position;
-                RaycastHit2D raycastHit2D = Physics2D.Raycast(playerVector + new Vector2(Random.Range(6, 9), 2), new Vector2(0, -1));
-                if (raycastHit2D.collider.gameObject.layer == 6)
+                RaycastHit2D raycastHit2D = Physics2D.Raycast(playerVector + new Vector2(Random.Range(6, 9), 1), new Vector2(0, -1));
+                if (raycastHit2D.collider != null && raycastHit2D.collider.gameObject.layer == 6 && raycastHit2D.collider.gameObject.tag != "Player")
                 {
 
                     GameObject go = Instantiate<GameObject>(weatherPrefab[2], raycastHit2D.point, Quaternion.identity);
                     
                 }
             }
-            else if (state == State.cold)
-            {
-
-            }
             else if (state == State.hot)
             {
-
+                
+            }
+            else if (state == State.cold)
+            {
+                
             }
         }
 
