@@ -121,7 +121,7 @@ namespace GameJam
                 CheckDirectionToFace(_moveInput.x > 0);
 
             if(_moveInput.y < 0) {
-                Debug.Log("¾Æ·¡·Î");
+                Debug.Log("ï¿½Æ·ï¿½ï¿½ï¿½");
                 MyEventSystem.Instance.Call(EventType.PlatformDrop);
             }
                 
@@ -356,7 +356,7 @@ namespace GameJam
             float targetSpeed = _moveInput.x * Data.runMaxSpeed;
 
             if (LastOnGroundTime > 0 && targetSpeed == 0) {
-                // ¸¶ÂûÀÇ ±¸Çö
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 float amount = Mathf.Max(Mathf.Abs(rb2D.velocity.x), 0.2f);
                 amount *= Mathf.Sign(rb2D.velocity.x);
                 rb2D.AddForce(Vector2.right * -amount, ForceMode2D.Impulse);
@@ -374,6 +374,7 @@ namespace GameJam
                 accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
             else
                 accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount * Data.accelInAir : Data.runDeccelAmount * Data.deccelInAir;
+            
             #endregion
 
             #region Add Bonus Jump Apex Acceleration
@@ -383,7 +384,7 @@ namespace GameJam
                 targetSpeed *= Data.jumpHangMaxSpeedMult;
             }
             #endregion
-
+            
             #region Conserve Momentum
             //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
             if (Data.doConserveMomentum && Mathf.Abs(rb2D.velocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb2D.velocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && LastOnGroundTime < 0) {
@@ -558,23 +559,23 @@ namespace GameJam
         private IEnumerator HitRoutine()
         {
             _isHit = true;
-            // Hit ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà
+            // Hit ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½
             float startTime = Time.time;
             while (Time.time - startTime <= _hitAnimationTime) {
                 yield return null;
             }
             startTime = Time.time;
-            // Hit ¾Ö´Ï¸ÞÀÌ¼Ç ½ÇÇà Á¾·á
+            // Hit ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             while (Time.time - startTime <= _hitImmuneTime) {
                 yield return null;
             }
-            // Hit ¸é¿ª ÆÇÁ¤ Á¾·á
+            // Hit ï¿½é¿ª ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             _isHit = false;
         }
 
         private void Dead()
         {
-            Debug.Log("À¸¾ÓÁÖ±Ý");
+            Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½");
         }
 
         #region CHECK METHODS
