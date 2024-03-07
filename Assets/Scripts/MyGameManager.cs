@@ -22,6 +22,7 @@ namespace GameJam
         private void Awake()
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         // Start is called before the first frame update
         void Start()
@@ -32,7 +33,7 @@ namespace GameJam
         IEnumerator Routine()
         {
             while(index < stages.Length) {
-                current = Instantiate(stages[index], transform);
+                current = Instantiate(stages[index]);
                 current.Init();
                 yield return new WaitUntil(() => _isClear);
                 yield return new WaitUntil(() => _isNextStage);
@@ -48,7 +49,7 @@ namespace GameJam
         private void OnStageStart()
         {
             gameObject.GetComponent<AudioSource>().Stop();
-            if (index<3)
+            if (index < 3)
             {
             gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.bGMAudioClips[0];
 
@@ -59,13 +60,11 @@ namespace GameJam
             }
             gameObject.GetComponent<AudioSource>().Play();
 
-            Debug.Log($"�������� {index} ����");
             _isClear = false;
             _isNextStage = false;
         }
         private void OnStageClear()
         {
-            Debug.Log($"�������� {index} Ŭ����");
             _isClear = true;
         }
 
@@ -73,11 +72,11 @@ namespace GameJam
         {
             StopCoroutine(nameof(Routine));
             SceneManager.LoadScene("World");
+            StartCoroutine(nameof(Routine));
         }
 
         private void OnNextStage()
         {
-            Debug.Log($"���� ����������~");
             _isNextStage = true;
         }
 

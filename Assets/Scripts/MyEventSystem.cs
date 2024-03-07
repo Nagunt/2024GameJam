@@ -136,7 +136,6 @@ namespace GameJam
             Debug.Log("Call Event At");
             Dictionary<EventType, EventDelegateClass> dic = eventData_2;
             if (dic.TryGetValue(eventType, out EventDelegateClass value)) {
-                Debug.Log("¡∏¿Á«‘");
                 (value as EventDelegateClass<T, K>).callback?.Invoke(t, k);
             }
         }
