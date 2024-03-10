@@ -21,26 +21,32 @@ namespace GameJam
             transform.localPosition = targetPos;
         }
 
-        private void Update()
+        private void LateUpdate()
         {
-            Vector2 currentPos = transform.localPosition;
-            Vector2 targetPos = target.localPosition;
-            float distance = (currentPos - targetPos).sqrMagnitude;
-            if (distance < 0.01f)
-            {
-                return;
-            }
-            if (sequence.IsActive())
-            {
-                sequence.Kill();
-            }
-            sequence = DOTween.Sequence();
-            sequence.
-                Append(transform.DOLocalMoveX(targetPos.x, duration)).
-                Join(transform.DOLocalMoveY(targetPos.y, duration)).
-                SetEase(Ease.OutQuad).
-                OnKill(() => sequence = null).
-                Play();
+            transform.localPosition = new Vector3(
+                Mathf.Lerp(transform.localPosition.x, target.localPosition.x, 0.5f), 
+                target.localPosition.y, 
+                transform.localPosition.z);
+
+
+
+
+            //float distance = (currentPos - targetPos).sqrMagnitude;
+            //if (distance < 0.01f)
+            //{
+            //    return;
+            //}
+            //if (sequence.IsActive())
+            //{
+            //    sequence.Kill();
+            //}
+            //sequence = DOTween.Sequence();
+            //sequence.
+            //    Append(transform.DOLocalMoveX(targetPos.x, duration)).
+            //    Join(transform.DOLocalMoveY(targetPos.y, duration)).
+            //    SetEase(Ease.OutQuad).
+            //    OnKill(() => sequence = null).
+            //    Play();
         }
     }
 }

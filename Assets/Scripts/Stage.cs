@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using System;
 
 namespace GameJam
 {
@@ -10,7 +11,6 @@ namespace GameJam
         public CinemachineVirtualCamera virtualCamera;
         public void Init()
         {
-            MyEventSystem.Instance.Call(EventType.StageStart);
             virtualCamera.Follow = Player.Instance.transform;
         }
     }

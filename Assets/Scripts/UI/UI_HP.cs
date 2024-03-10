@@ -7,11 +7,15 @@ namespace GameJam
 {
     public class UI_HP : MonoBehaviour
     {
-        public Image image;
+        public Image[] image;
 
         void OnHPChanged(int current, int max)
         {
-            image.fillAmount = (float)current / max;
+            for(int i = 0; i < image.Length; i++)
+            {
+                image[i].enabled = i <= current - 1;
+            }
+
         }
 
         private void OnEnable()

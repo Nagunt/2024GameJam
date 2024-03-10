@@ -16,7 +16,7 @@ namespace GameJam
         private void OnTriggerEnter2D(Collider2D collision)
         {
             if (collision.TryGetComponent<Player>(out Player Player)) {
-                SceneManager.LoadScene("GameClear");
+                MyEventSystem.Instance.Call(EventType.StageClear);
             }
         }
 

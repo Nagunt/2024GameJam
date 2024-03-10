@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -29,8 +30,11 @@ namespace GameJam
         }
         private void OnClick_Next()
         {
-            MyEventSystem.Instance.Call(EventType.StageRestart);
-            SetState(false);
+            MyEventSystem.Instance.Call<float, Action>(EventType.FadeOut, 1f, () =>
+            {
+                SetState(false);
+                MyEventSystem.Instance.Call(EventType.StageRestart);
+            });
         }
         private void Awake()
         {

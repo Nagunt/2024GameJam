@@ -1,4 +1,5 @@
 using MonsterLove.StateMachine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -15,7 +16,6 @@ namespace GameJam
         //Scriptable object which holds all the player's movement parameters. If you don't want to use it
         //just paste in all the parameters, though you will need to manuly change all references in this script
         public PlayerData Data;
-        public GameObject Bullet;
 
         #region COMPONENTS
         public Rigidbody2D rb2D { get; private set; }
@@ -26,7 +26,7 @@ namespace GameJam
         //Variables control the various actions the player can perform at any time.
         //These are fields which can are public allowing for other sctipts to read them
         //but can only be privately written to.
-        public bool IsFacingRight { get; private set; }
+        public bool IsFacingRight { get; set; }
         public bool IsJumping { get; private set; }
         public bool IsWallJumping { get; private set; }
         public bool IsDashing { get; private set; }
@@ -74,7 +74,7 @@ namespace GameJam
         [SerializeField] private Transform _frontWallCheckPoint;
         [SerializeField] private Transform _backWallCheckPoint;
         [SerializeField] private Vector2 _wallCheckSize = new Vector2(0.5f, 1f);
-        [SerializeField] private Transform _shootPosition;
+        [SerializeField] private Transform _targetPosition;
         #endregion
 
         #region LAYERS & TAGS
@@ -98,7 +98,11 @@ namespace GameJam
             }
         }
 
+        bool IsPhysics = true;
+
         public Graphic_Player graphic;
+
+        public Vector2 TargetPoint => _targetPosition.transform.position;
 
         private void Awake()
         {
@@ -111,7 +115,7 @@ namespace GameJam
 
         private void Start()
         {
-            SetGravityScale(Data.gravityScale);
+            SetPhysics(true);
             graphic.SetOwner(this);
             IsFacingRight = true;
             HP = HP;
@@ -130,6 +134,8 @@ namespace GameJam
 
             _shootDelay -= Time.deltaTime;
             #endregion
+
+            if (!IsPhysics) return;
 
             #region INPUT HANDLER
             if (IsAlive) {
@@ -155,10 +161,6 @@ namespace GameJam
 
                 if (Input.GetKeyDown(KeyCode.LeftShift)) {
                     OnDashInput();
-                }
-
-                if (Input.GetKeyDown(KeyCode.X)) {
-                    OnShootInput();
                 }
             }
             #endregion
@@ -236,7 +238,7 @@ namespace GameJam
             #region DASH CHECKS
             if (CanDash() && LastPressedDashTime > 0) {
                 //Freeze game for split second. Adds juiciness and a bit of forgiveness over directional input
-                Sleep(Data.dashSleepTime);
+                //Sleep(Data.dashSleepTime);
 
                 //If not direction pressed, dash forward
                 if (_moveInput != Vector2.zero)
@@ -302,6 +304,7 @@ namespace GameJam
 
         private void FixedUpdate()
         {
+            if (!IsPhysics) return;
             //Handle Run
             if (!IsDashing) {
                 if (IsWallJumping)
@@ -350,6 +353,23 @@ namespace GameJam
         public void SetGravityScale(float scale)
         {
             rb2D.gravityScale = scale;
+        }
+
+        public void SetPhysics(bool state)
+        {
+            IsPhysics = state;
+
+            if (IsPhysics)
+            {
+                SetGravityScale(Data.gravityScale);
+                rb2D.bodyType = RigidbodyType2D.Dynamic;
+            }
+            else
+            {
+                SetGravityScale(0);
+                rb2D.velocity = Vector2.zero;
+                rb2D.bodyType = RigidbodyType2D.Static;
+            }
         }
 
         private void Sleep(float duration)
@@ -568,6 +588,7 @@ namespace GameJam
         {
             if (_isHit) return;
             if (IsDashing) return;
+            if (!IsPhysics) return;
             HP -= damage;
             if (hp > 0) {
                 Vector2 direction = (Vector2)transform.position - position;
@@ -581,7 +602,7 @@ namespace GameJam
                 StartCoroutine(nameof(HitRoutine));
             }
             else {
-                
+                SetPhysics(false);
                 MyEventSystem.Instance.Call(EventType.GameOver);
             }
         }
@@ -591,19 +612,16 @@ namespace GameJam
         private IEnumerator HitRoutine()
         {
             _isHit = true;
-            // Hit �ִϸ��̼� ����
             graphic.SetHitEffect(true);
             float startTime = Time.time;
             while (Time.time - startTime <= _hitAnimationTime) {
                 yield return null;
             }
             startTime = Time.time;
-            // Hit �ִϸ��̼� ���� ����
             while (Time.time - startTime <= _hitImmuneTime) {
                 yield return null;
             }
             graphic.SetHitEffect(false);
-            // Hit �鿪 ���� ����
             _isHit = false;
         }
 
@@ -657,7 +675,6 @@ namespace GameJam
             return _shootDelay <= 0f && !IsDashing;
         }
         #endregion
-
 
         #region EDITOR METHODS
         private void OnDrawGizmosSelected()

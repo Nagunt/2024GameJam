@@ -16,6 +16,11 @@ namespace GameJam
         HPChanged,
         GameOver,
         PlatformDrop,
+        FadeIn,
+        FadeOut,
+        WhiteFadeOut,
+        RoundFadeIn,
+        RoundFadeOut,
         GameClear
     }
 
@@ -36,11 +41,17 @@ namespace GameJam
             public new Action<T, K> callback;
         }
 
+        class EventDelegateClass<T, K, L> : EventDelegateClass
+        {
+            public new Action<T, K, L> callback;
+        }
+
         public static MyEventSystem Instance { get; private set; } = null;
 
         Dictionary<EventType, EventDelegateClass> eventData_0;
         Dictionary<EventType, EventDelegateClass> eventData_1;
         Dictionary<EventType, EventDelegateClass> eventData_2;
+        Dictionary<EventType, EventDelegateClass> eventData_3;
 
         private void Awake()
         {
@@ -48,6 +59,8 @@ namespace GameJam
             eventData_0 = new Dictionary<EventType, EventDelegateClass>();
             eventData_1 = new Dictionary<EventType, EventDelegateClass>();
             eventData_2 = new Dictionary<EventType, EventDelegateClass>();
+            eventData_3 = new Dictionary<EventType, EventDelegateClass>();
+            DontDestroyOnLoad(gameObject);
         }
 
         public void Register(EventType eventType, Action action)
@@ -90,6 +103,22 @@ namespace GameJam
             }
         }
 
+        public void Register<T, K, L>(EventType eventType, Action<T, K, L> action)
+        {
+            Dictionary<EventType, EventDelegateClass> dic = eventData_3;
+            if (dic.TryGetValue(eventType, out EventDelegateClass value))
+            {
+                (value as EventDelegateClass<T, K, L>).callback += action;
+            }
+            else
+            {
+                Debug.Log("Register Event At");
+                EventDelegateClass<T, K, L> newEvent = new EventDelegateClass<T, K, L>();
+                newEvent.callback += action;
+                dic.Add(eventType, newEvent);
+            }
+        }
+
         public void UnRegister(EventType eventType, Action action)
         {
             Dictionary<EventType, EventDelegateClass> dic = eventData_0;
@@ -113,6 +142,14 @@ namespace GameJam
                 (value as EventDelegateClass<T, K>).callback -= action;
             }
         }
+        public void UnRegister<T, K, L>(EventType eventType, Action<T, K, L> action)
+        {
+            Dictionary<EventType, EventDelegateClass> dic = eventData_3;
+            if (dic.TryGetValue(eventType, out EventDelegateClass value))
+            {
+                (value as EventDelegateClass<T, K, L>).callback -= action;
+            }
+        }
 
 
         public void Call(EventType eventType)
@@ -133,10 +170,18 @@ namespace GameJam
 
         public void Call<T, K>(EventType eventType, T t, K k)
         {
-            Debug.Log("Call Event At");
             Dictionary<EventType, EventDelegateClass> dic = eventData_2;
             if (dic.TryGetValue(eventType, out EventDelegateClass value)) {
                 (value as EventDelegateClass<T, K>).callback?.Invoke(t, k);
+            }
+        }
+
+        public void Call<T, K, L>(EventType eventType, T t, K k, L l)
+        {
+            Dictionary<EventType, EventDelegateClass> dic = eventData_3;
+            if (dic.TryGetValue(eventType, out EventDelegateClass value))
+            {
+                (value as EventDelegateClass<T, K, L>).callback?.Invoke(t, k, l);
             }
         }
     }

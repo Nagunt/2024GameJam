@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,16 +13,23 @@ namespace GameJam
         public Button button;
         public Text text;
 
+        private bool isNext = false;
         private Sequence sequence;
 
         private void Awake()
         {
             button.onClick.AddListener(() => {
+                if (isNext) return;
                 if (sequence.IsActive())
                 {
                     sequence.Kill();
                 }
-                SceneManager.LoadScene("World");
+                isNext = true;
+                
+                MyEventSystem.Instance.Call<float, Action>(EventType.FadeOut, 1f, () =>
+                {
+                    SceneManager.LoadScene("World");
+                });
             });
         }
         private void Start()
@@ -29,23 +37,26 @@ namespace GameJam
             sequence = DOTween.Sequence();
 
             sequence.
-                Append(text.DOFade(0, 1.2f)).
-                Append(text.DOFade(1, 1.2f)).
+                Append(text.DOFade(0, 1.2f).SetEase(Ease.InQuad)).
+                Append(text.DOFade(1, 1.2f).SetEase(Ease.InQuad)).
                 SetLoops(-1).
-                SetEase(Ease.Linear).
                 OnKill(() => sequence = null).
                 Play();
         }
 
         private void Update()
         {
-            if (Input.anyKey)
+            if (isNext == false && Input.anyKey)
             {
                 if (sequence.IsActive())
                 {
                     sequence.Kill();
                 }
-                SceneManager.LoadScene("World");
+                isNext = true;
+                MyEventSystem.Instance.Call<float, Action>(EventType.FadeOut, 1f, () =>
+                {
+                    SceneManager.LoadScene("World");
+                });
             }
         }
 

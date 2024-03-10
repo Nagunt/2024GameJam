@@ -22,10 +22,10 @@ namespace GameJam
 
         public WaterShot shotPrefab;
 
-        int hp = 5;
+        int hp = 3;
         bool isAlive => hp > 0;
 
-        public int damage = 2;
+        public int damage = 1;
         public float power = 90f;
         private void Awake()
         {
@@ -33,29 +33,29 @@ namespace GameJam
             graphic = GetComponentInChildren<Graphic_Turtle>();
             colliders = new List<Collider2D>();
         }
-        // Start is called before the first frame update
-        void Start()
+        public void Spawn()
         {
-            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[0];
-            gameObject.GetComponent<AudioSource>().Play();
-            StartCoroutine(nameof(Routine));
+            StartCoroutine(Routine());
         }
-
-
         private bool _isHit = true;
         private float _hitImmuneTime = 3f;
         // Update is called once per frame
         private WaterShot newShot;
         IEnumerator Routine()
         {
+            gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[0];
+            gameObject.GetComponent<AudioSource>().Play();
             rb2D.bodyType = RigidbodyType2D.Kinematic;
-            yield return transform.DOMove(firstPos.position, 5f);
-            yield return new WaitForSeconds(3f);
+            bool isEnd = false;
+            transform.
+                DOMove(firstPos.position, 5f).
+                OnComplete(() => isEnd = true).
+                Play();
+            yield return new WaitUntil(() => isEnd);
             rb2D.bodyType = RigidbodyType2D.Dynamic;
             _isHit = false;
             while (isAlive) {
                 newShot = Instantiate(shotPrefab, shotPos);
-                graphic.SetFilpX(true);
                 graphic.SetCharge();
                 yield return new WaitForSeconds(3f);
                 if(Player.Instance.gameObject != null) {
@@ -65,8 +65,6 @@ namespace GameJam
                 }
                 newShot = null;
                 graphic.SetShoot();
-                yield return new WaitForSeconds(1f);
-                graphic.SetFilpX(false);
                 yield return new WaitForSeconds(4f);
                 _moveDir = new Vector2(-1, 0);
                 gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[1];
@@ -89,12 +87,13 @@ namespace GameJam
 
         private void Update()
         {
+            if(!isAlive) return;
             if (Player.Instance.gameObject != null) {
                 if(Player.Instance.transform.position.x > transform.position.x) {
-                    graphic.transform.localScale = new Vector3(-1, 1, 1);
+                    graphic.transform.localScale = new Vector3(1, 1, 1);
                 }
                 else {
-                    graphic.transform.localScale = new Vector3(1, 1, 1);
+                    graphic.transform.localScale = new Vector3(-1, 1, 1);
                 }
             }
         }
@@ -119,11 +118,13 @@ namespace GameJam
                             return;
                         }
                         else {
+                            _isHit = true;
                             gameObject.GetComponent<AudioSource>().clip = GameJam.MyGameManager.Instance.BossAudioClips[4];
                             gameObject.GetComponent<AudioSource>().Play();
                             graphic.SetDead();
                             if(newShot != null) Destroy(newShot.gameObject);
                             StopAllCoroutines();
+                            transform.DOMove(transform.position - new Vector3(0, 10, 0), 5f).Play();
                             MyEventSystem.Instance.Call(EventType.GameClear);
                             return;
                         }
@@ -133,7 +134,6 @@ namespace GameJam
             if (Physics2D.OverlapCollider(hitBox, contactFilter, colliders) > 0) {
                 foreach (Collider2D collider in colliders) {
                     if (collider.CompareTag("Player")) {
-
                         Player.Instance.Hit(damage, transform.position, power);
                     }
                 }
@@ -143,15 +143,12 @@ namespace GameJam
         private IEnumerator HitRoutine()
         {
             _isHit = true;
-            // Hit �ִϸ��̼� ����
             graphic.SetHitEffect(true);
             float startTime = Time.time;
-            // Hit �ִϸ��̼� ���� ����
             while (Time.time - startTime <= _hitImmuneTime) {
                 yield return null;
             }
             graphic.SetHitEffect(false);
-            // Hit �鿪 ���� ����
             _isHit = false;
         }
     }

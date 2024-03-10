@@ -9,7 +9,8 @@ namespace GameJam
     {
         private void OnStageStart()
         {
-            Instantiate(MyGameManager.Instance.playerPrefab, transform.position, Quaternion.identity);
+            Player.Instance.transform.position = transform.position;
+            Player.Instance.IsFacingRight = true;
         }
 
         private void OnEnable()
